@@ -15,4 +15,3 @@ Scripts developed for Biohackathon Europe 2025 Project 10
 * [RATTLE](https://github.com/comprna/RATTLE)
 * [bambu](https://github.com/GoekeLab/bambu)
 * [FLAIR2](https://github.com/BrooksLabUCSC/flair)
-* [Isoseq3]()
