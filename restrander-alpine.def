@@ -1,0 +1,13 @@
+Bootstrap: docker
+From: alpine
+
+%post
+    apk add git make gcc make g++ zlib-dev
+    mkdir /biohack
+    cd /biohack
+    git clone https://github.com/jakob-schuster/restrander.git
+    cd restrander
+    make
+
+%runscript
+    /biohack/restrander/restrander $@
