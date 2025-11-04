@@ -129,6 +129,8 @@ Notes: This is an R package, installation from Bioconductor. Beta for sc/spatial
 
 * [FLAIR2](https://github.com/BrooksLabUCSC/flair)
 
+Long-read data: Pacbio and ONT
+
 Container: https://hub.docker.com/r/brookslab/flair
 
 Conda installation: https://anaconda.org/bioconda/flair
@@ -137,6 +139,8 @@ Notes:
 
 
 * [StringTie3](https://github.com/gpertea/stringtie)
+
+Long-read data: Pacbio
 
 Container: https://depot.galaxyproject.org/singularity/stringtie%3A3.0.1--h00789bb_0
 
