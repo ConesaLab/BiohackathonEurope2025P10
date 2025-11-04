@@ -9,8 +9,8 @@ include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_longtrench_pipeline'
-include { MINIMAP2_ALIGN         } from '../modules/nf-core/minimap2/align/main'
-
+include { ONT_PREPROCESSING      } from '../subworkflows/local/ont_preprocessing/main'
+include { MINIMAP2_MAPPING        } from '../subworkflows/local/minimap2_mapping/main'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -29,16 +29,7 @@ workflow LONGTRENCH {
     ch_versions = Channel.empty()
     ch_multiqc_files = Channel.empty()
      
-    //
-    // Uncompress genome fasta file if required
-    //
-    // if (reads.endsWith('f*q.gz')) {
-    //     ch_fasta    = GUNZIP_FASTA ( [ [:], file(reads, checkIfExists: true) ] ).gunzip.map { it[1] }
-    //     ch_versions = ch_versions.mix(GUNZIP_FASTA.out.versions)
-    // } else if (reads.endsWith('.bam')) {
-    //     ch_fasta = PBTK_BAM2FASTQ ( [ [:], file(reads, checkIfExists: true) ] ).fasta.map { it[1] }
-    //     ch_versions = ch_versions.mix(PBTK_BAM2FASTQ.out.versions)
-    // } else if (reads.endsWith('.fasta') || reads.endsWith('.fa')) {
+
     ch_fasta    = Channel.value(file(reads, checkIfExists: true))
     ch_samplesheet.view()
     // }
@@ -59,17 +50,24 @@ workflow LONGTRENCH {
     )
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
     ch_versions = ch_versions.mix(FASTQC.out.versions.first())
-    
     //
-    // MODULE: Run Minimap2 alignment on gennome
+    // SUBWORFLOW: Read preprocessing of ONT reads
     //
-    MINIMAP2_ALIGN (
-        ch_samplesheet,
-        ch_fasta.map { [ [:], it ] },
-        true,
-        'csi', // bai
-        false,
-        true
+    if (params.technology == 'ONT' || params.technology == 'dONT') {
+       ONT_PREPROCESSING(ch_samplesheet)
+    }
+
+    ch_samplesheet_processed = (params.technology == 'ONT' || params.technology == 'dONT') ? 
+         ONT_PREPROCESSING.out.stats : 
+         ch_samplesheet
+
+    // 
+    // SUBWORKFLOW: Run minimap2 with 2pass
+    //
+    MINIMAP2_MAPPING (
+        ch_samplesheet_processed,
+        ch_fasta,
+        ch_gtf
     )
 
 
