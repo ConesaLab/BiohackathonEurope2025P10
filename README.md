@@ -7,9 +7,9 @@ Scripts developed for Biohackathon Europe 2025 Project 10
 ## Tools to be used
 
 
-## Using Reference Annotation
+# Using Reference Annotation
 
-## Not Using Reference Annotation
+# Not Using Reference Annotation
 
 * [isONclust3](https://github.com/aljpetri/isONclust3)
 
@@ -21,7 +21,7 @@ Conda installation: https://anaconda.org/hcc/isonclust3
 
 Notes: The installation of isONclust3 requires users to install the Rust programming language onto their system.
 
-## Optional Use of Reference Annotation
+# Optional Use of Reference Annotation
 
 
 
