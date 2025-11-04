@@ -115,6 +115,17 @@ Conda installation: https://anaconda.org/bioconda/flair
 Notes: 
 
 
+* [StringTie3](https://github.com/gpertea/stringtie)
+
+Container: https://depot.galaxyproject.org/singularity/stringtie%3A3.0.1--h00789bb_0
+
+Conda installation: https://anaconda.org/bioconda/stringtie
+
+Notes:
+
+
+
+
 
 
 
