@@ -1,0 +1,63 @@
+# distribution based on: debian 9.8
+Bootstrap:docker
+From:debian
+
+# container for seqkit v0.12.1
+# Build:
+# sudo singularity build seqkit_v0.12.1.sif Singularity.seqkit_v0.12.1
+
+%environment
+export LC_ALL=C
+export LC_NUMERIC=en_GB.UTF-8
+export PATH="/opt/miniconda/bin:$PATH"
+
+#%labels
+#COPYRIGHT INRAe GAFL 2020
+#AUTHOR I2B team
+#VERSION 1.1
+#LICENSE MIT
+#DATE_MODIF MYDATEMODIF
+
+%help
+Container for Isoquant
+
+Version: 0.12.1
+
+%runscript
+    #default runscript: seq passing all arguments from cli: $@
+    exec /opt/miniconda/envs/isoquant/bin/python3.8 /opt/miniconda/envs/isoquant/share/isoquant-3.10.0-0/isoquant.py "$@"
+
+%post
+
+    #essential stuff but minimal
+    apt update
+    #for security fixe:
+    #apt upgrade -y
+    apt install -y wget bzip2
+
+    #install conda
+    cd /opt
+    rm -fr miniconda
+
+    #miniconda3: get miniconda3 version 4.7.12
+    wget https://repo.continuum.io/miniconda/Miniconda3-4.7.12-Linux-x86_64.sh -O miniconda.sh
+
+    #install conda
+    bash miniconda.sh -b -p /opt/miniconda
+    export PATH="/opt/miniconda/bin:$PATH"
+    #add channels
+    conda config --add channels defaults
+    conda config --add channels bioconda
+    conda config --add channels conda-forge
+
+    #install seqkit
+    
+    conda create -c conda-forge -c bioconda -n isoquant python=3.8 isoquant
+    curl -L https://github.com/lh3/minimap2/releases/download/v2.30/minimap2-2.30_x64-linux.tar.bz2 | tar -jxvf -
+    mv ./minimap2-2.30_x64-linux/minimap2 /bin/minimap2
+    #cleanup
+    conda clean -y --all
+    rm -f /opt/miniconda.sh
+    apt autoremove --purge
+    apt clean
+

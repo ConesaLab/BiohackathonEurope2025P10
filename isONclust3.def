@@ -1,0 +1,14 @@
+Bootstrap: docker
+From: alpine
+
+%post
+    apk add wget rust cargo
+    cd /
+    wget https://github.com/aljpetri/isONclust3/archive/refs/tags/isONclust3-0.3.0.tar.gz
+    tar -xvzf isONclust3-0.3.0.tar.gz
+    ls isON* 
+    cd isONclust3-isONclust3-0.3.0
+    cargo build --release
+
+%runscript
+    /isONclust3-isONclust3-0.3.0/target/release/isONclust3 $@
