@@ -21,17 +21,24 @@ Conda installation: https://anaconda.org/hcc/isonclust3
 
 Notes: The installation of isONclust3 requires users to install the Rust programming language onto their system.
 
-## Optional Use of Reference Annotation
-
-
 
 * [Freddie](https://github.com/vpc-ccg/freddie)
+
+Long-read data: ONT
 
 Container: NA
 
 Conda installation: https://anaconda.org/bioconda/freddie
 
-Notes: Snakemake pipeline also avalable. Freddie's clustering stage uses Gurobi Solver which needs a license to use. For academics, a cost-free license is available upon registration: https://www.gurobi.com/downloads/end-user-license-agreement-academic/
+Notes: Snakemake pipeline also available. Freddie's clustering stage uses Gurobi Solver, which requires a license to use. For academics, a cost-free license is available upon registration: https://www.gurobi.com/downloads/end-user-license-agreement-academic/
+
+
+
+
+## Optional Use of Reference Annotation
+
+
+
 
 
 
