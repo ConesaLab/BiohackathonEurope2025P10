@@ -22,6 +22,9 @@ Single-cell long-read RNA-Seq using the Kinnex (PacBio) protocol with Revio sequ
 
 * PRJNA995902
 
+Direct Nanopore sequencing of native RNA (dRNA-seq)
+
+
 # Tools
 
 
