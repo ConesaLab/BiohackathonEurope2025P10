@@ -9,7 +9,7 @@ include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_longtrench_pipeline'
- include { MINIMAP2_ALIGN } from '../modules/nf-core/minimap2/align/main'
+include { MINIMAP2_ALIGN         } from '../modules/nf-core/minimap2/align/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -20,11 +20,37 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_long
 workflow LONGTRENCH {
 
     take:
-    ch_samplesheet // channel: samplesheet read in from --input
+    ch_samplesheet 
+    reads       
+    gtf         // channel: path(genome.gtf)
+
     main:
 
     ch_versions = Channel.empty()
     ch_multiqc_files = Channel.empty()
+     
+    //
+    // Uncompress genome fasta file if required
+    //
+    // if (reads.endsWith('f*q.gz')) {
+    //     ch_fasta    = GUNZIP_FASTA ( [ [:], file(reads, checkIfExists: true) ] ).gunzip.map { it[1] }
+    //     ch_versions = ch_versions.mix(GUNZIP_FASTA.out.versions)
+    // } else if (reads.endsWith('.bam')) {
+    //     ch_fasta = PBTK_BAM2FASTQ ( [ [:], file(reads, checkIfExists: true) ] ).fasta.map { it[1] }
+    //     ch_versions = ch_versions.mix(PBTK_BAM2FASTQ.out.versions)
+    // } else if (reads.endsWith('.fasta') || reads.endsWith('.fa')) {
+    ch_fasta    = Channel.value(file(reads, checkIfExists: true))
+    ch_samplesheet.view()
+    // }
+    //
+    // Uncompress GTF annotation file # TODO: add gff option
+    //
+    if (gtf.endsWith('.gz')) {
+                ch_gtf      = GUNZIP_GTF ( [ [:], file(gtf, checkIfExists: true) ] ).gunzip.map { it[1] }
+                ch_versions = ch_versions.mix(GUNZIP_GTF.out.versions)
+            } else {
+                ch_gtf = Channel.value(file(gtf, checkIfExists: true))
+    }
     //
     // MODULE: Run FastQC
     //
@@ -33,6 +59,19 @@ workflow LONGTRENCH {
     )
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
     ch_versions = ch_versions.mix(FASTQC.out.versions.first())
+    
+    //
+    // MODULE: Run Minimap2 alignment on gennome
+    //
+    MINIMAP2_ALIGN (
+        ch_samplesheet,
+        ch_fasta.map { [ [:], it ] },
+        true,
+        'csi', // bai
+        false,
+        true
+    )
+
 
     //
     // Collate and save software versions

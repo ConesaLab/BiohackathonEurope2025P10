@@ -29,7 +29,7 @@ include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_long
 // TODO nf-core: Remove this line if you don't need a FASTA file
 //   This is an example of how to use getGenomeAttribute() to fetch parameters
 //   from igenomes.config using `--genome`
-params.fasta = getGenomeAttribute('fasta')
+// params.fasta = getGenomeAttribute('fasta')
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -51,7 +51,9 @@ workflow NFCORE_LONGTRENCH {
     // WORKFLOW: Run pipeline
     //
     LONGTRENCH (
-        samplesheet
+        samplesheet,
+        params.fasta,
+        params.gtf
     )
     emit:
     multiqc_report = LONGTRENCH.out.multiqc_report // channel: /path/to/multiqc_report.html
@@ -75,10 +77,10 @@ workflow {
         args,
         params.outdir,
         params.input,
-        params.help,
-        params.help_full,
-        params.show_hidden
+        params.fasta,
+        params.gtf
     )
+
 
     //
     // WORKFLOW: Run main workflow
