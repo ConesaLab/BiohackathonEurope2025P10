@@ -43,6 +43,19 @@ Conda installation: https://anaconda.org/bioconda/espresso
 Notes: Snakemake pipeline also avalable.
 
 
+
+* [RATTLE](https://github.com/comprna/RATTLE)
+
+Long-read data: ONT
+
+Container: NA
+
+Conda installation: NA
+
+Notes: Snakemake pipeline available. Binary compiled on Ubuntu 18.04.1 on an i7-7500U processor available at https://zenodo.org/records/6578778
+
+
+
 ## Not Using Reference Annotation
 
 * [isONclust3](https://github.com/aljpetri/isONclust3)
@@ -67,8 +80,6 @@ Conda installation: https://anaconda.org/bioconda/freddie
 Notes: Snakemake pipeline also available. Freddie's clustering stage uses Gurobi Solver, which requires a license to use. For academics, a cost-free license is available upon registration: https://www.gurobi.com/downloads/end-user-license-agreement-academic/
 
 
-
-
 ## Optional Use of Reference Annotation
 
 
@@ -83,22 +94,9 @@ Conda installation: https://anaconda.org/bioconda/isoquant
 Notes:
 
 
+* [Bambu](https://github.com/GoekeLab/bambu)
 
-
-
-
-
-* [RATTLE](https://github.com/comprna/RATTLE)
-
-Container: NA
-
-Conda installation: NA
-
-Notes: Snakemake pipeline available. Binary compiled on Ubuntu 18.04.1 on an i7-7500U processor available at https://zenodo.org/records/6578778
-
-
-
-* [bambu](https://github.com/GoekeLab/bambu)
+Long-read data: Pacbio and ONT
 
 Container: NA
 
