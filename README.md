@@ -20,6 +20,18 @@ Conda installation: https://anaconda.org/bioconda/isoseq
 Notes: The utilization of the reference annotation is at the last step, to call different isoforms of the same gene.
 
 
+* [Isosceles](https://github.com/Genentech/Isosceles)
+
+Long-read data: Pacbio and ONT
+
+Container: Singularity image https://zenodo.org/records/10951160
+
+Conda installation: NA
+
+Notes: This is an R package.
+
+
+
 ## Not Using Reference Annotation
 
 * [isONclust3](https://github.com/aljpetri/isONclust3)
@@ -59,15 +71,6 @@ Conda installation: https://anaconda.org/bioconda/isoquant
 
 Notes:
 
-
-
-* [Isosceles](https://github.com/Genentech/Isosceles)
-
-Container: Singularity image https://zenodo.org/records/10951160
-
-Conda installation: NA
-
-Notes: This is an R package.
 
 
 
