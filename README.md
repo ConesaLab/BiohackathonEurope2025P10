@@ -32,6 +32,17 @@ Notes: This is an R package.
 
 
 
+* [ESPRESSO](https://github.com/Xinglab/espresso)
+
+Long-read data: Pacbio and ONT
+
+Container: https://hub.docker.com/r/xinglab/espresso
+
+Conda installation: https://anaconda.org/bioconda/espresso
+
+Notes: Snakemake pipeline also avalable.
+
+
 ## Not Using Reference Annotation
 
 * [isONclust3](https://github.com/aljpetri/isONclust3)
@@ -74,13 +85,6 @@ Notes:
 
 
 
-* [ESPRESSO](https://github.com/Xinglab/espresso)
-
-Container: https://hub.docker.com/r/xinglab/espresso
-
-Conda installation: https://anaconda.org/bioconda/espresso
-
-Notes: Snakemake pipeline also avalable.
 
 
 
