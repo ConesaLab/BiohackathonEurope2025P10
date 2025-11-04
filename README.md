@@ -13,7 +13,9 @@ Scripts developed for Biohackathon Europe 2025 Project 10
 # Datasets
 
 * PRJNA1237905
+Long-read ONT-dRNA and PacBio Kinnex full-length RNA sequencing of UPF1 depletion in human colorectal adenocarcinoma cell line HCT116 via the auxin-inducible degron (AID) system
 * PRJNA1237905
+Single-cell long-read RNA-Seq using the Kinnex (PacBio) protocol with Revio sequencing for the bone marrow of patients with AML. 
 * PRJNA995902
 
 # Tools
