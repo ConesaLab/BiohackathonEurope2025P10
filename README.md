@@ -9,6 +9,17 @@ Scripts developed for Biohackathon Europe 2025 Project 10
 
 ## Using Reference Annotation
 
+* [IsoSeq](https://github.com/PacificBiosciences/IsoSeq)
+
+Long-read data: Pacbio
+
+Container: NA
+
+Conda installation: https://anaconda.org/bioconda/isoseq
+
+Notes: The utilization of the reference annotation is at the last step, to call different isoforms of the same gene.
+
+
 ## Not Using Reference Annotation
 
 * [isONclust3](https://github.com/aljpetri/isONclust3)
@@ -38,25 +49,13 @@ Notes: Snakemake pipeline also available. Freddie's clustering stage uses Gurobi
 ## Optional Use of Reference Annotation
 
 
-
-
-
-
 * [IsoQuant](https://github.com/ablab/IsoQuant)
+
+Long-read data: Pacbio and ONT
 
 Container: NA
 
 Conda installation: https://anaconda.org/bioconda/isoquant
-
-Notes:
-
-
-
-* [IsoSeq](https://github.com/PacificBiosciences/IsoSeq)
-
-Container: NA
-
-Conda installation: https://anaconda.org/bioconda/isoseq
 
 Notes:
 
