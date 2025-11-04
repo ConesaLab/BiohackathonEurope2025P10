@@ -72,7 +72,7 @@ Container: NA
 
 Conda installation: NA
 
-Notes: Snakemake pipeline available. Binary compiled on Ubuntu 18.04.1 on an i7-7500U processoravailable at https://zenodo.org/records/6578778
+Notes: Snakemake pipeline available. Binary compiled on Ubuntu 18.04.1 on an i7-7500U processor available at https://zenodo.org/records/6578778
 
 
 
