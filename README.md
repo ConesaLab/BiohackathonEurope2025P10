@@ -76,6 +76,27 @@ Conda installation: NA
 Notes: Snakemake pipeline available. Binary compiled on Ubuntu 18.04.1 on an i7-7500U processor available at https://zenodo.org/records/6578778
 
 
+* [FLAIR2](https://github.com/BrooksLabUCSC/flair)
+
+Long-read data: Pacbio and ONT
+
+Container: https://hub.docker.com/r/brookslab/flair
+
+Conda installation: https://anaconda.org/bioconda/flair
+
+Notes: 
+
+
+* [Bambu](https://github.com/GoekeLab/bambu)
+
+Long-read data: Pacbio and ONT
+
+Container: NA
+
+Conda installation: https://anaconda.org/bioconda/bioconductor-bambu
+
+Notes: This is an R package, installed from Bioconductor. Beta for sc/spatial RNA-seq here: https://github.com/GoekeLab/bambu-singlecell-spatial
+
 
 ## Not Using Reference Annotation
 
@@ -114,28 +135,6 @@ Conda installation: https://anaconda.org/bioconda/isoquant
 
 Notes:
 
-
-* [Bambu](https://github.com/GoekeLab/bambu)
-
-Long-read data: Pacbio and ONT
-
-Container: NA
-
-Conda installation: https://anaconda.org/bioconda/bioconductor-bambu
-
-Notes: This is an R package, installation from Bioconductor. Beta for sc/spatial RNA-seq here: https://github.com/GoekeLab/bambu-singlecell-spatial
-
-
-
-* [FLAIR2](https://github.com/BrooksLabUCSC/flair)
-
-Long-read data: Pacbio and ONT
-
-Container: https://hub.docker.com/r/brookslab/flair
-
-Conda installation: https://anaconda.org/bioconda/flair
-
-Notes: 
 
 
 * [StringTie3](https://github.com/gpertea/stringtie)
