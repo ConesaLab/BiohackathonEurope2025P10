@@ -2,7 +2,7 @@ Bootstrap: docker
 From: alpine
 
 %post
-   apk add py3-pip git make gcc make g++ zlib-dev python3-dev
+   apk add bash py3-pip git make gcc make g++ zlib-dev python3-dev
    pip install --break-system-packages git+https://github.com/bartongroup/2passtools.git
 
 %runscript

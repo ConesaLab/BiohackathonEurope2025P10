@@ -1,0 +1,13 @@
+Bootstrap: docker
+From: alpine
+
+%post
+    apk add git make g++
+    cd /
+    git clone https://github.com/gpertea/gffread
+    cd gffread
+    make release
+    ln -s /gffread/gffread /bin/gffread
+
+%runscript
+    /bin/gffread "$@"

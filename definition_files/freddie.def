@@ -1,10 +1,6 @@
-# distribution based on: debian 9.8
+# distribution based on: debian
 Bootstrap:docker
 From:debian
-
-# container for seqkit v0.12.1
-# Build:
-# sudo singularity build seqkit_v0.12.1.sif Singularity.seqkit_v0.12.1
 
 %environment
 export LC_ALL=C
@@ -19,13 +15,11 @@ export PATH="/opt/miniconda/bin:$PATH"
 #DATE_MODIF MYDATEMODIF
 
 %help
-Container for Isoquant
-
-Version: 0.12.1
+Container for Freddie
 
 %runscript
     #default runscript: seq passing all arguments from cli: $@
-    exec /opt/miniconda/envs/isoquant/bin/python3.8 /opt/miniconda/envs/isoquant/share/isoquant-3.10.0-0/isoquant.py "$@"
+    /bin/micromamba run -p /opt/freddie "$@"
 
 %post
 
@@ -33,7 +27,7 @@ Version: 0.12.1
     apt update
     #for security fixe:
     #apt upgrade -y
-    apt install -y wget bzip2
+    apt install -y wget bzip2 curl
 
     #install conda
     cd /opt
@@ -45,6 +39,8 @@ Version: 0.12.1
     #install conda
     bash miniconda.sh -b -p /opt/miniconda
     export PATH="/opt/miniconda/bin:$PATH"
+    cd /
+    curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
     #add channels
     conda config --add channels defaults
     conda config --add channels bioconda
@@ -52,9 +48,9 @@ Version: 0.12.1
 
     #install seqkit
     
-    conda create -c conda-forge -c bioconda -n isoquant python=3.8 isoquant
-    curl -L https://github.com/lh3/minimap2/releases/download/v2.30/minimap2-2.30_x64-linux.tar.bz2 | tar -jxvf -
-    mv ./minimap2-2.30_x64-linux/minimap2 /bin/minimap2
+    /bin/micromamba create -c conda-forge -c bioconda -c gurobi --prefix /opt/freddie  freddie gurobi
+    #conda install -y -c bioconda freddie
+
     #cleanup
     conda clean -y --all
     rm -f /opt/miniconda.sh

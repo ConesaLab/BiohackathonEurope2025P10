@@ -1,30 +1,7 @@
-# distribution based on: debian
-Bootstrap:docker
-From:debian
-
-%environment
-export LC_ALL=C
-export LC_NUMERIC=en_GB.UTF-8
-export PATH="/opt/miniconda/bin:$PATH"
-
-#%labels
-#COPYRIGHT INRAe GAFL 2020
-#AUTHOR I2B team
-#VERSION 1.1
-#LICENSE MIT
-#DATE_MODIF MYDATEMODIF
-
-%help
-Container for Isoquant
-
-Version: 0.12.1
-
-%runscript
-    #default runscript: seq passing all arguments from cli: $@
-    conda run -n freddie "$@"
+Bootstrap: docker
+From: alpine
 
 %post
-
     #essential stuff but minimal
     apt update
     #for security fixe:
@@ -41,18 +18,17 @@ Version: 0.12.1
     #install conda
     bash miniconda.sh -b -p /opt/miniconda
     export PATH="/opt/miniconda/bin:$PATH"
-    cd /
-    curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
     #add channels
+    curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
     conda config --add channels defaults
     conda config --add channels bioconda
     conda config --add channels conda-forge
 
     #install seqkit
     
-    #/bin/micromamba create -c conda-forge -c bioconda --prefix /opt/freddie  freddie
-    conda install -y -c bioconda freddie
-
+    /bin/micromamba create -c conda-forge -c bioconda -n isoquant 
+    curl -L https://github.com/lh3/minimap2/releases/download/v2.30/minimap2-2.30_x64-linux.tar.bz2 | tar -jxvf -
+    mv ./minimap2-2.30_x64-linux/minimap2 /bin/minimap2
     #cleanup
     conda clean -y --all
     rm -f /opt/miniconda.sh
