@@ -11,6 +11,7 @@ include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pi
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_longtrench_pipeline'
 include { ONT_PREPROCESSING      } from '../subworkflows/local/ont_preprocessing/main'
 include { MINIMAP2_MAPPING        } from '../subworkflows/local/minimap2_mapping/main'
+include { BAMBU                    } from '../modules/local/bambu/main'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -69,7 +70,17 @@ workflow LONGTRENCH {
         ch_fasta,
         ch_gtf
     )
+    MINIMAP2_MAPPING.out.bam_wo_ref.view()
 
+    // 
+    // MODULE: Run BAMBU
+    //
+    ch_gtf.map { gtf -> [["id": gtf.simpleName], gtf] }.view()
+    BAMBU (
+        ch_fasta,
+        ch_gtf.map { gtf -> [["id": gtf.simpleName], gtf] },
+        MINIMAP2_MAPPING.out.bam_wo_ref
+    )
 
     //
     // Collate and save software versions

@@ -1,6 +1,9 @@
 module load anaconda 
 mamba activate nextflow
 cd nf-core-longtrench/
+
+
+## [detached from 3268082.pts-8.master]
 # running the test dataset
 srun --ntasks 2 --mem-per-cpu 20G --cpus-per-task 13 --qos short nextflow run main.nf  -profile singularity \
                     --input assets/samplesheet_test.csv \

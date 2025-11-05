@@ -31,14 +31,14 @@ workflow MINIMAP2_MAPPING {
     //
     // MODULE: Run 2PASSTOOLS MERGE
     //
-    PASSTOOLS_SCORE(
-        ch_fasta.map { [ [:], it ] },
-        MINIMAP2_WO_REF.out.bam
+    // PASSTOOLS_SCORE(
+    //     ch_fasta.map { [ [:], it ] },
+    //     MINIMAP2_WO_REF.out.bam
 
-    )
+    // )
 
     emit:
-    bam = MINIMAP2_WO_REF.out.bam
+    bam_wo_ref = MINIMAP2_WO_REF.out.bam
 
 
 

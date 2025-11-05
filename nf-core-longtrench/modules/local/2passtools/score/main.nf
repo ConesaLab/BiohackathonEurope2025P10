@@ -8,7 +8,7 @@ process PASSTOOLS_SCORE {
 
     input:
     tuple val(meta), path(genome)
-    tuple val(meta2), path(bam), path(bai)
+    tuple val(meta2), path(bam)
 
 
     output:
