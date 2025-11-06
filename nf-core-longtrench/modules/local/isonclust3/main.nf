@@ -18,7 +18,7 @@ process ISONCLUST3 {
 
     script:
     def args = task.ext.args
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta.id}_isONclust"
     def tech_lower = params.technology.toLowerCase().replaceAll(/^dont$/, 'ont')
 
     """

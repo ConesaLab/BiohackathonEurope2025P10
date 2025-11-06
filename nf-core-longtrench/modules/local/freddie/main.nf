@@ -10,7 +10,7 @@ process FREDDIE {
     tuple val(meta), path(reads)
 
     output:
-    tuple val(meta), path($prefix), emit: isonclust_gff
+    tuple val(meta), path("*_freddie*"), emit: gtf    
     path "versions.yml", emit: versions
 
     when:
@@ -18,13 +18,11 @@ process FREDDIE {
 
     script:
     def args = task.ext.args
-    def prefix = task.ext.prefix ?: "${meta.id}"
-    def tech_lower = params.technology.toLowerCase().replaceAll(/^dont\$/, 'ont')
+    def prefix = task.ext.prefix ?: "${meta.id}_freddie"
+    def tech_lower = params.technology.toLowerCase().replaceAll(/^dont$/, 'ont')
 
     """
-    isONclust3 --fastq $reads \\
-               --mode $tech_lower \\
-               --outfolder $prefix 
+ 
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

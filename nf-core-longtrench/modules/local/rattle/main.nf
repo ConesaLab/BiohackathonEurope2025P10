@@ -1,16 +1,15 @@
 process RATTLE {
     tag "${meta.id}"
-    label 'process_low'
+    label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
     container "/home/julensan/tools/rattle.sif"
  
-
     input:
     tuple val(meta), path(reads)
 
     output:
-    tuple val(meta), path($prefix), emit: isonclust_gff
+    tuple val(meta), path('*/*transcriptome.fq'), emit: fastq
     path "versions.yml", emit: versions
 
     when:
@@ -18,10 +17,12 @@ process RATTLE {
 
     script:
     def args = task.ext.args
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta.id}_rattle"
     def rna_flag = (params.technology == 'dONT') ? '--rna' : ''
   
     """
+
+    mkdir -p $prefix
 
     rattle cluster -i $reads \\
            -o $prefix \\
@@ -29,9 +30,18 @@ process RATTLE {
            --iso-kmer-size 14 \\
            ${rna_flag}
 
+    rattle correct -i  *.fastq \\
+          -c $prefix/clusters.out \\
+          -o $prefix 
+    
+    rattle polish -i $prefix/consensi.fq \\
+                  -o $prefix \\
+                  ${rna_flag}
+    
+    
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        rattle: \$( rattle version | sed 's/rattle v//' )
+        rattle: 1.0
     END_VERSIONS
     """
 
@@ -42,7 +52,7 @@ process RATTLE {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        isONclust3: \$( isONclust3 version | sed 's/isONclust3 v//' )
+        rattle: \$( rattle --version | sed 's/rattle v//' )
     END_VERSIONS
     """
 }
