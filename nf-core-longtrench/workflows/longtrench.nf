@@ -20,6 +20,7 @@ include { ISOQUANT as ISOQUANT_W_REF  } from   '../modules/local/isoquant/main'
 include { ISOQUANT as ISOQUANT_WO_REF  } from   '../modules/local/isoquant/main'
 include { ESPRESSO    } from    '../modules/local/espresso/main'
 include { BEDTOOLS_BAMTOBED } from '../modules/nf-core/bedtools/bamtobed/main' 
+include { FLAIR as FLAIR } from '../modules/local/flair/main'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -163,6 +164,22 @@ workflow LONGTRENCH {
     BEDTOOLS_BAMTOBED(
         ch_samplesheet
     )
+
+    //
+    // MODULE: FLAIR
+    //
+
+    ch_samplesheet_processed.combine(BEDTOOLS_BAMTOBED.out.bed).view()
+
+    FLAIR (
+        // fastq
+        ch_samplesheet_processed.combine(BEDTOOLS_BAMTOBED.out.bed)
+        // GTF
+        ch_gtf
+        // genome.fa
+        ch_fasta
+    )
+
 
     //
     // MODULE: MultiQC
