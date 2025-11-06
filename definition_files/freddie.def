@@ -27,7 +27,7 @@ Container for Freddie
     apt update
     #for security fixe:
     #apt upgrade -y
-    apt install -y wget bzip2 curl
+    apt install -y wget bzip2 curl procps
 
     #install conda
     cd /opt
@@ -50,7 +50,15 @@ Container for Freddie
     
     /bin/micromamba create -c conda-forge -c bioconda -c gurobi --prefix /opt/freddie  freddie gurobi
     #conda install -y -c bioconda freddie
-
+    echo "#! /bin/bash" >> /bin/freddie_cluster.py
+    echo "/opt/freddie/bin/python3 /opt/freddie/bin/freddie_cluster.py" >> /bin/freddie_cluster.py
+    echo "#! /bin/bash" >> /bin/freddie_isoforms.py
+    echo "/opt/freddie/bin/python3 /opt/freddie/bin/freddie_isoforms.py" >> /bin/freddie_isoforms.py
+    echo "#! /bin/bash" >> /bin/freddie_segment.py
+    echo "/opt/freddie/bin/python3 /opt/freddie/bin/freddie_segment.py" >> /bin/freddie_segment.py
+    echo "#! /bin/bash" >> /bin/freddie_split.py
+    echo "/opt/freddie/bin/python3 /opt/freddie/bin/freddie_split.py" >> /bin/freddie_split.py
+    chmod +x /bin/freddie_cluster.py /bin/freddie_isoforms.py /bin/freddie_segment.py /bin/freddie_split.py
     #cleanup
     conda clean -y --all
     /bin/micromamba clean --locks
