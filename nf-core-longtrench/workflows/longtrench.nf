@@ -18,6 +18,8 @@ include { STRINGTIE3 as STRINGTIE3_W_REF } from  '../modules/local/stringtie3/ma
 include { STRINGTIE3 as STRINGTIE3_WO_REF } from  '../modules/local/stringtie3/main'
 include { ISOQUANT as ISOQUANT_W_REF  } from   '../modules/local/isoquant/main'
 include { ISOQUANT as ISOQUANT_WO_REF  } from   '../modules/local/isoquant/main'
+include { ESPRESSO    } from    '../modules/local/espresso/main'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -81,9 +83,9 @@ workflow LONGTRENCH {
     //
     // MODULE: Run rattle on fastq
     //
-    // RATTLE(
-    //     ch_samplesheet_processed
-    // )
+    RATTLE(
+        ch_samplesheet_processed
+    )
     
     // SUBWORKFLOW: Run minimap2 with 2pass
     //
@@ -97,11 +99,20 @@ workflow LONGTRENCH {
     // 
     // MODULE: Run BAMBU
     //
-    ch_gtf.map { gtf -> [["id": gtf.simpleName], gtf] }.view()
     BAMBU (
         ch_fasta,
         ch_gtf.map { gtf -> [["id": gtf.simpleName], gtf] },
         MINIMAP2_MAPPING.out.bam_wo_ref
+    )
+    //
+    // MODULE: Run espresso
+    //
+
+    // with annotation
+    ESPRESSO (
+        MINIMAP2_MAPPING.out.bam_wo_ref,
+        ch_gtf.map { gtf -> [["id": gtf.simpleName], gtf] },
+        ch_fasta
     )
 
     //
@@ -124,12 +135,14 @@ workflow LONGTRENCH {
     // with reference
     ISOQUANT_W_REF(
         MINIMAP2_MAPPING.out.bam_wo_ref,
+        MINIMAP2_MAPPING.out.index_wo_ref,
         ch_gtf.map { gtf -> [["id": gtf.simpleName], gtf] },
         ch_fasta
     )
     // without reference
-        ISOQUANT_WO_REF(
+    ISOQUANT_WO_REF(
         MINIMAP2_MAPPING.out.bam_wo_ref,
+        MINIMAP2_MAPPING.out.index_wo_ref,
         Channel.value([[:], []]),
         ch_fasta
     )

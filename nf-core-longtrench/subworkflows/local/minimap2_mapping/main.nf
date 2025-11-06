@@ -39,6 +39,7 @@ workflow MINIMAP2_MAPPING {
 
     emit:
     bam_wo_ref = MINIMAP2_WO_REF.out.bam
+    index_wo_ref = MINIMAP2_WO_REF.out.index
 
 
 

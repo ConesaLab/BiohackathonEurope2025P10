@@ -1,30 +1,9 @@
-BIND_MOUNTS="-B /home/julensan/references:/home/julensan/references -B /home/julensan/datasets:/home/julensan/datasets"
-CONTAINER="/home/julensan/tools/espresso_1.6.0--9eb8d902e8f7c23f.sif"
-
-
-# Run ESPRESSO with bind mounts
-
-singularity run $BIND_MOUNTS $CONTAINER 
-
-
-singularity run $BIND_MOUNTS $CONTAINER perl /opt/conda/bin/ESPRESSO_C.pl \
-    -I $espresso_outdir \
-    -F $GENOME_FILE \
-        -X 0 \
-    -T $cpus
-
-echo "Running ESPRESSO_Q.pl..."
-singularity run $BIND_MOUNTS $CONTAINER perl /opt/conda/bin/ESPRESSO_Q.pl \
-    -L $espresso_outdir/samples.tsv.updated \
-
-
-
 process ESPRESSO {
     tag "${meta.id}"
     label 'process_low'
     
     conda "${moduleDir}/environment.yml"
-    container "/home/julensan/tools/espresso.sif"
+    container "/home/julensan/tools/espresso_1.6.0--9eb8d902e8f7c23f.sif"
  
     input:
     tuple val(meta), path(bam)
@@ -32,7 +11,7 @@ process ESPRESSO {
     path(fasta)
 
     output:
-    tuple val(meta), path("gtf"), emit: isonclust_gff
+    tuple val(meta), path("*/*.gtf"), emit: gtf
     path "versions.yml", emit: versions
 
     when:
@@ -49,7 +28,7 @@ process ESPRESSO {
     printf "${bam}\\t${meta.id}\\n" > sample.tsv	
     echo "Running ESPRESSO_S.pl..."
     perl /opt/conda/bin/ESPRESSO_S.pl \\
-        -L samples.tsv \\
+        -L sample.tsv \\
         -F $fasta \\
         $annotation \\
         -O $prefix \\
@@ -57,18 +36,21 @@ process ESPRESSO {
 
     echo "Running ESPRESSO_C.pl..."
     perl /opt/conda/bin/ESPRESSO_C.pl \\
-        -I . \\
+        -I $prefix  \\
         -F  $fasta \\
         -X 0 \\
         -T $task.cpus \\
         $annotation 
         
+
     echo "Running ESPRESSO_Q.pl..."
+    perl /opt/conda/bin/ESPRESSO_Q.pl \\
+         -L $prefix/sample.tsv.updated 
 
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        isONclust3: \$( isONclust3 --version | sed 's/isONclust3 v//' )
+        espresso: \$(1.6)
     END_VERSIONS
     """
 
@@ -79,7 +61,7 @@ process ESPRESSO {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        isONclust3: \$( isONclust3 version | sed 's/isONclust3 v//' )
+        espresso: \$(1.6)
     END_VERSIONS
     """
 }

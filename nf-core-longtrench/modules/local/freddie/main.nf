@@ -19,12 +19,10 @@ process FREDDIE {
     script:
     def args = task.ext.args
     def prefix = task.ext.prefix ?: "${meta.id}_freddie"
-    def tech_lower = params.technology.toLowerCase().replaceAll(/^dont\$/, 'ont')
+    def tech_lower = params.technology.toLowerCase().replaceAll(/^dont$/, 'ont')
 
     """
-    isONclust3 --fastq $reads \\
-               --mode $tech_lower \\
-               --outfolder $prefix 
+ 
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

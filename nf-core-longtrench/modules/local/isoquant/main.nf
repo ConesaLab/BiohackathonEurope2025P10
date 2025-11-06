@@ -7,12 +7,13 @@ process ISOQUANT {
  
 
     input:
-    tuple val(meta), path(reads)
+    tuple val(meta), path(bam)
+    tuple val(meta), path(bai)
     tuple val(meta2), path(gtf)
     path(fasta)
 
     output:
-    tuple val(meta), path("*_ispquant.gtf"), emit: gtf
+    tuple val(meta), path("*/*/*gtf"), emit: gtf
     path "versions.yml", emit: versions
 
     when:
@@ -22,15 +23,15 @@ process ISOQUANT {
     def args = task.ext.args
     def prefix = task.ext.prefix ?: "${meta.id}_isoquant"
     def annotation = gtf ? "--genedb $gtf --complete_genedb" : ''
-    def tech_lower = params.technology.toLowerCase().replaceAll(/^dont\$/, 'ont')
+    def tech_lower = params.technology.toLowerCase().replaceAll(/^dont$/, 'ont')
     """
-    isoquant.py --reference $fasta \\
-              ${annotation} \\
-              -t $task.cpus \\
-              --data_type ${tech_lower} \\
-              --bam $reads \\
-              --polya_requirement auto --report_canonical all \\
-              --output $prefix
+    isoquant.py --data_type ${tech_lower} \\
+                --reference $fasta \\
+                $annotation \\
+                --bam $bam \\
+                -t $task.cpus \\
+                --prefix $prefix
+
            
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
