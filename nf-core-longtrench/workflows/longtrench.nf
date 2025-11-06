@@ -19,7 +19,7 @@ include { STRINGTIE3 as STRINGTIE3_WO_REF } from  '../modules/local/stringtie3/m
 include { ISOQUANT as ISOQUANT_W_REF  } from   '../modules/local/isoquant/main'
 include { ISOQUANT as ISOQUANT_WO_REF  } from   '../modules/local/isoquant/main'
 include { ESPRESSO    } from    '../modules/local/espresso/main'
-
+include { BEDTOOLS_BAMTOBED } from '../modules/nf-core/bedtools/bamtobed/main' 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -156,7 +156,13 @@ workflow LONGTRENCH {
             sort: true,
             newLine: true
         ).set { ch_collated_versions }
-
+    
+    //
+    // MODULES: BEDTOOLS_BAMTOBED
+    //
+    BEDTOOLS_BAMTOBED(
+        ch_samplesheet
+    )
 
     //
     // MODULE: MultiQC

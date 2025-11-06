@@ -1,6 +1,6 @@
 process ESPRESSO {
     tag "${meta.id}"
-    label 'process_low'
+    label 'process_high'
     
     conda "${moduleDir}/environment.yml"
     container "/home/julensan/tools/espresso_1.6.0--9eb8d902e8f7c23f.sif"
