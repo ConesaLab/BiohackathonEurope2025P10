@@ -28,15 +28,19 @@ workflow ONT_PREPROCESSING {
     )
     
     ch_restrander_config = Channel.fromPath("${projectDir}/modules/local/restrander/assets/dRNA_ONT.json")
-    RESTRANDER (
+    if (params.technology == 'ONT') {
+        RESTRANDER (
         SEQKIT_SEQ.out.fastx,
         ch_restrander_config
-    )
+      )
+    }
 
+    fastq_processed = (params.technology == 'ONT') ? 
+         RESTRANDER.out.fastq : 
+         SEQKIT_SEQ.out.fastx
+
+    fastq_processed.view()
     emit:
-    stats = SEQKIT_STATS.out.stats 
-    fastq = RESTRANDER.out.fastq
-
-
+    fastq = fastq_processed
     versions = ch_versions                    // channel: [ path(versions.yml) ]
 }

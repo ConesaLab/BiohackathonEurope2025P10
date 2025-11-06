@@ -12,6 +12,12 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_long
 include { ONT_PREPROCESSING      } from '../subworkflows/local/ont_preprocessing/main'
 include { MINIMAP2_MAPPING        } from '../subworkflows/local/minimap2_mapping/main'
 include { BAMBU                    } from '../modules/local/bambu/main'
+include { ISONCLUST3                } from '../modules/local/isonclust3'
+include { RATTLE                   } from '../modules/local/rattle/main'
+include { STRINGTIE3 as STRINGTIE3_W_REF } from  '../modules/local/stringtie3/main'
+include { STRINGTIE3 as STRINGTIE3_WO_REF } from  '../modules/local/stringtie3/main'
+include { ISOQUANT as ISOQUANT_W_REF  } from   '../modules/local/isoquant/main'
+include { ISOQUANT as ISOQUANT_W_REF  } from   '../modules/local/isoquant/main'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -59,10 +65,26 @@ workflow LONGTRENCH {
     }
 
     ch_samplesheet_processed = (params.technology == 'ONT' || params.technology == 'dONT') ? 
-         ONT_PREPROCESSING.out.stats : 
+         ONT_PREPROCESSING.out.fastq : 
          ch_samplesheet
+    
+    ONT_PREPROCESSING.out.fastq.view()
+    // Running genome free tools 
 
-    // 
+    //
+    // MODULE: Run IsonClust3
+    //
+    ISONCLUST3(
+        ch_samplesheet_processed
+    )
+
+    //
+    // MODULE: Run rattle on fastq
+    //
+    // RATTLE(
+    //     ch_samplesheet_processed
+    // )
+    
     // SUBWORKFLOW: Run minimap2 with 2pass
     //
     MINIMAP2_MAPPING (
@@ -81,6 +103,24 @@ workflow LONGTRENCH {
         ch_gtf.map { gtf -> [["id": gtf.simpleName], gtf] },
         MINIMAP2_MAPPING.out.bam_wo_ref
     )
+
+    //
+    // MODULE: Run Stringtie3 with and without annotation
+    //
+    // with annotation
+    STRINGTIE3_W_REF (
+        MINIMAP2_MAPPING.out.bam_wo_ref,
+        ch_gtf.map { gtf -> [["id": gtf.simpleName], gtf] }
+    )
+    // without annotation
+    STRINGTIE3_WO_REF (
+        MINIMAP2_MAPPING.out.bam_wo_ref,
+        Channel.value([[:], []])
+    )
+
+    //
+    // MODULE: Run IsoQuant
+    //
 
     //
     // Collate and save software versions
