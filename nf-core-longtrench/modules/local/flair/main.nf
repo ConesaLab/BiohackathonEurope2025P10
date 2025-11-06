@@ -5,18 +5,18 @@ process FLAIR {
     container "/home/julen/san/tools/flair.sif"
 
     input:
-    tuple val(meta),  path(bedfile)
+    tuple val(meta), path(reads), path(bedfile)  
     tuple val(meta2), path(gtf)
-    tuple val(meta3), path(genome)
-    tuple val(meta4), path(reads)
+    path(genome)
+
 
 
     output:
     path "versions.yml", emit: versions
-    path "flair.collapse_all.isoform.counts.txt"
-    path "flair.collapse_all.isoform.isoforms.bed"
-    path "flair.collapse_all.isoform.isoforms.fa"
-    path "flair.collapse_all.isoform.isoforms.gtf"
+    path "flair.collapse_all.isoform.counts.txt", emit: counts
+    path "flair.collapse_all.isoform.isoforms.bed", emit: bed
+    path "flair.collapse_all.isoform.isoforms.fa", emit: fasta
+    path "flair.collapse_all.isoform.isoforms.gtf", emit: gtf
 
     when:
     task.ext.when == null || task.ext.when
