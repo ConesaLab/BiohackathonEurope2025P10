@@ -8,7 +8,7 @@ From: alpine
    tar -xzvf RATTLE-1.0.tar.gz 
    cd RATTLE-1.0
    ./build.sh
-   ls
+   ln -s /RATTLE-1.0/rattle /bin/rattle
 
 %runscript
     /RATTLE-1.0/rattle $@

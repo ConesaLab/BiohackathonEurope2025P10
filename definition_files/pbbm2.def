@@ -3,7 +3,7 @@ From: debian
 
 %runscript
     #default runscript: seq passing all arguments from cli: $@
-    exec /opt/lima/bin/lima "$@"
+    exec /opt/pbmm2/bin/pbmm2 "$@"
 
 %post
     #essential stuff but minimal
@@ -31,7 +31,8 @@ From: debian
 
     #install seqkit
     
-    /bin/micromamba create -c conda-forge -c bioconda -p /opt/lima  lima
+    /bin/micromamba create -c conda-forge -c bioconda -p /opt/pbmm2 pbmm2
+
     curl -L https://github.com/lh3/minimap2/releases/download/v2.30/minimap2-2.30_x64-linux.tar.bz2 | tar -jxvf - --no-same-owner
     mv ./minimap2-2.30_x64-linux/minimap2 /bin/minimap2
     #cleanup
@@ -39,5 +40,5 @@ From: debian
     rm -f /opt/miniconda.sh
     apt autoremove --purge
     apt clean
-    ln -s /opt/lima/bin/lima /bin/lima
+    ln -s /opt/pbmm2/bin/pbmm2 /bin/pbmm2
 

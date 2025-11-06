@@ -9,6 +9,7 @@ From: alpine
     ls isON* 
     cd isONclust3-isONclust3-0.3.0
     cargo build --release
+    ln -s /isONclust3-isONclust3-0.3.0/target/release/isONclust3 /bin/isONclust3
 
 %runscript
     /isONclust3-isONclust3-0.3.0/target/release/isONclust3 $@

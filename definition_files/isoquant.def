@@ -47,7 +47,6 @@ Version: 0.12.1
     export PATH="/opt/miniconda/bin:$PATH"
     #add channels
     curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
-    mv bin/micromamba /bin/micromamba
     conda config --add channels defaults
     conda config --add channels bioconda
     conda config --add channels conda-forge
