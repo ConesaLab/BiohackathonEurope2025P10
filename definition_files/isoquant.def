@@ -25,7 +25,7 @@ Version: 0.12.1
 
 %runscript
     #default runscript: seq passing all arguments from cli: $@
-    exec /opt/miniconda/envs/isoquant/bin/python3.8 /opt/miniconda/envs/isoquant/share/isoquant-3.10.0-0/isoquant.py "$@"
+    exec /opt/isoquant/bin/python3.8 /opt/isoquant/share/isoquant-3.10.0-0/isoquant.py $@
 
 %post
 
@@ -33,7 +33,7 @@ Version: 0.12.1
     apt update
     #for security fixe:
     #apt upgrade -y
-    apt install -y wget bzip2 curl
+    apt install -y wget bzip2 curl bash procps
 
     #install conda
     cd /opt
@@ -47,16 +47,19 @@ Version: 0.12.1
     export PATH="/opt/miniconda/bin:$PATH"
     #add channels
     curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
+    mv bin/micromamba /bin/micromamba
     conda config --add channels defaults
     conda config --add channels bioconda
     conda config --add channels conda-forge
 
     #install seqkit
     
-    /bin/micromamba create -c conda-forge -c bioconda -n isoquant python=3.8 isoquant
-    curl -L https://github.com/lh3/minimap2/releases/download/v2.30/minimap2-2.30_x64-linux.tar.bz2 
-    tar -jxvf minimap2-2.30_x64-linux.tar.bz2
+    /bin/micromamba create -c conda-forge -c bioconda -p /opt/isoquant python=3.8 isoquant
+    curl -L https://github.com/lh3/minimap2/releases/download/v2.30/minimap2-2.30_x64-linux.tar.bz2 | tar -jxvf - --no-same-owner
     mv ./minimap2-2.30_x64-linux/minimap2 /bin/minimap2
+    echo "#! /bin/bash" > /bin/isoquant.py
+    echo "/opt/isoquant/bin/python3.8 /opt/isoquant/share/isoquant-3.10.0-0/isoquant.py \$@" > /bin/isoquant.py
+    chmod +x /bin/isoquant.py
     #cleanup
     conda clean -y --all
     rm -f /opt/miniconda.sh
