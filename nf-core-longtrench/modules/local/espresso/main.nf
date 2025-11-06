@@ -11,7 +11,7 @@ process ESPRESSO {
     path(fasta)
 
     output:
-    tuple val(meta), path("*/*.gtf"), emit: gtf
+    tuple val(meta), path("*.gtf"), emit: gtf
     path "versions.yml", emit: versions
 
     when:
@@ -47,6 +47,7 @@ process ESPRESSO {
     perl /opt/conda/bin/ESPRESSO_Q.pl \\
          -L $prefix/sample.tsv.updated 
 
+    mv */*.gtf ${prefix}.gtf
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

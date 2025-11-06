@@ -18,9 +18,11 @@ include { STRINGTIE3 as STRINGTIE3_W_REF } from  '../modules/local/stringtie3/ma
 include { STRINGTIE3 as STRINGTIE3_WO_REF } from  '../modules/local/stringtie3/main'
 include { ISOQUANT as ISOQUANT_W_REF  } from   '../modules/local/isoquant/main'
 include { ISOQUANT as ISOQUANT_WO_REF  } from   '../modules/local/isoquant/main'
-include { ESPRESSO    } from    '../modules/local/espresso/main'
-include { BEDTOOLS_BAMTOBED } from '../modules/nf-core/bedtools/bamtobed/main' 
-include { FLAIR as FLAIR } from '../modules/local/flair/main'
+include { ESPRESSO                } from    '../modules/local/espresso/main'
+include { BEDTOOLS_BAMTOBED       } from '../modules/nf-core/bedtools/bamtobed/main' 
+include { FLAIR                   } from '../modules/local/flair/main'
+include { FREDDIE                   } from '../modules/local/freddie/main'
+include { SEQKIT_FQ2FA             } from '../modules/nf-core/seqkit/fq2fa/main'  
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -42,7 +44,7 @@ workflow LONGTRENCH {
 
     ch_fasta    = Channel.value(file(reads, checkIfExists: true))
     ch_samplesheet.view()
-    // }
+
     //
     // Uncompress GTF annotation file # TODO: add gff option
     //
@@ -71,8 +73,8 @@ workflow LONGTRENCH {
          ONT_PREPROCESSING.out.fastq : 
          ch_samplesheet
     
-    ONT_PREPROCESSING.out.fastq.view()
-    // Running genome free tools 
+
+    // ------ Running genome free tools ----------
 
     //
     // MODULE: Run IsonClust3
@@ -80,22 +82,33 @@ workflow LONGTRENCH {
     ISONCLUST3(
         ch_samplesheet_processed
     )
-
+    ch_versions = ch_versions.mix(ISONCLUST3.out.versions.first())
     //
     // MODULE: Run rattle on fastq
     //
     RATTLE(
         ch_samplesheet_processed
     )
-    
-    // SUBWORKFLOW: Run minimap2 with 2pass
+
+    //
+    // Convert fastq from rattle to fast
+    //
+    SEQKIT_FQ2FA(
+        RATTLE.out.fastq
+    )
+    ch_versions = ch_versions.mix(SEQKIT_FQ2FA.out.versions.first())
+
+    //
+    // SUBWORKFLOW: Run minimap2 
     //
     MINIMAP2_MAPPING (
         ch_samplesheet_processed,
         ch_fasta,
         ch_gtf
     )
-    MINIMAP2_MAPPING.out.bam_wo_ref.view()
+    ch_versions = ch_versions.mix(MINIMAP2_MAPPING.out.versions.first())
+
+    // ------ Running reference based tools ----------
 
     // 
     // MODULE: Run BAMBU
@@ -105,17 +118,47 @@ workflow LONGTRENCH {
         ch_gtf.map { gtf -> [["id": gtf.simpleName], gtf] },
         MINIMAP2_MAPPING.out.bam_wo_ref
     )
+    ch_versions = ch_versions.mix(BAMBU.out.versions.first())
     //
     // MODULE: Run espresso
     //
-
-    // with annotation
     ESPRESSO (
         MINIMAP2_MAPPING.out.bam_wo_ref,
         ch_gtf.map { gtf -> [["id": gtf.simpleName], gtf] },
         ch_fasta
     )
+    ch_versions = ch_versions.mix(ESPRESSO.out.versions.first())
+    //
+    // MODULES: BEDTOOLS_BAMTOBED
+    //
+    BEDTOOLS_BAMTOBED(
+        MINIMAP2_MAPPING.out.bam_wo_ref
+    )
 
+    //
+    // MODULE: FLAIR
+    //
+    FLAIR (
+        // fastq
+        ch_samplesheet_processed.combine(BEDTOOLS_BAMTOBED.out.bed, by: 0),
+        // GTF
+        ch_gtf.map { gtf -> [["id": gtf.simpleName], gtf] },
+        // genome.fa
+        ch_fasta
+    )
+    ch_versions = ch_versions.mix(FLAIR.out.versions.first())
+    
+    //
+    // MODULE: Run freddie
+    //
+    ch_freddie_license = Channel.fromPath("${HOME}/gurobi.lic")
+    FREDDIE(
+       ch_samplesheet_processed.combine(MINIMAP2_MAPPING.out.bam_wo_ref, by: 0),
+       ch_freddie_license
+    )
+    ch_versions = ch_versions.mix(FREDDIE.out.versions.first())
+
+    // ------ Running tools that can be run without reference ----------
     //
     // MODULE: Run Stringtie3 with and without annotation
     //
@@ -129,6 +172,7 @@ workflow LONGTRENCH {
         MINIMAP2_MAPPING.out.bam_wo_ref,
         Channel.value([[:], []])
     )
+    ch_versions = ch_versions.mix(STRINGTIE3_WO_REF.out.versions.first())
 
     //
     // MODULE: Run IsoQuant
@@ -147,6 +191,7 @@ workflow LONGTRENCH {
         Channel.value([[:], []]),
         ch_fasta
     )
+    ch_versions = ch_versions.mix(ISOQUANT_WO_REF.out.versions.first())
     //
     // Collate and save software versions
     //
@@ -158,28 +203,6 @@ workflow LONGTRENCH {
             newLine: true
         ).set { ch_collated_versions }
     
-    //
-    // MODULES: BEDTOOLS_BAMTOBED
-    //
-    BEDTOOLS_BAMTOBED(
-        ch_samplesheet
-    )
-
-    //
-    // MODULE: FLAIR
-    //
-
-    ch_samplesheet_processed.combine(BEDTOOLS_BAMTOBED.out.bed).view()
-
-    FLAIR (
-        // fastq
-        ch_samplesheet_processed.combine(BEDTOOLS_BAMTOBED.out.bed)
-        // GTF
-        ch_gtf
-        // genome.fa
-        ch_fasta
-    )
-
 
     //
     // MODULE: MultiQC

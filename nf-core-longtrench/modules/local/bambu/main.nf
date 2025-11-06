@@ -15,7 +15,7 @@ process BAMBU {
     tuple val(meta2), path(bams)
 
     output:
-    path "extended_annotations.gtf", emit: extended_gtf
+    path "*.gtf"                   , emit: gtf
     path "versions.yml"            , emit: versions
 
     when:
@@ -30,6 +30,8 @@ process BAMBU {
         --ncore=${task.cpus} \\
         --annotation=$gtf \\
         --fasta=$fasta $bams
+
+    mv extended_annotations.gtf ${prefix}.gtf
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

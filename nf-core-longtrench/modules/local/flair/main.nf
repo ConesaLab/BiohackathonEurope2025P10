@@ -2,7 +2,7 @@ process FLAIR {
     tag "${meta.id}"
     label ""
 
-    container "/home/julen/san/tools/flair.sif"
+    container "/home/julensan/tools/flair.sif"
 
     input:
     tuple val(meta), path(reads), path(bedfile)  
@@ -31,7 +31,7 @@ process FLAIR {
 
     awk 'NF == 12 && \$10 != "1" {print \$0}' bedfile.sorted.bed > bedfile.sorted.noMonoexon.bed
 
-    flair collapse --query  bedfile.sorted.noMonoexon.bed -g ${genome} -f ${gtf} --read ${fastq}
+    flair collapse --query  bedfile.sorted.noMonoexon.bed -g ${genome} -f ${gtf} --read ${reads}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

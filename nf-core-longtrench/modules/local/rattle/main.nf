@@ -9,7 +9,7 @@ process RATTLE {
     tuple val(meta), path(reads)
 
     output:
-    tuple val(meta), path('*/*transcriptome.fq'), emit: fastq
+    tuple val(meta), path('*.fq'), emit: fastq
     path "versions.yml", emit: versions
 
     when:
@@ -21,7 +21,6 @@ process RATTLE {
     def rna_flag = (params.technology == 'dONT') ? '--rna' : ''
   
     """
-
     mkdir -p $prefix
 
     rattle cluster -i $reads \\
@@ -43,6 +42,8 @@ process RATTLE {
     "${task.process}":
         rattle: 1.0
     END_VERSIONS
+
+    mv */*transcriptome.fq ${prefix}.fq
     """
 
     stub:

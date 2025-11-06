@@ -21,7 +21,7 @@
 
 ## Introduction
 
-**nf-core/longtrench** is a bioinformatics pipeline that ...
+**longtrench** is a bioinformatics pipeline that was build during the ELIXIR Biohackathon Europe to benchamark different tools to transcriptome reconstruction.
 
 <!-- TODO nf-core:
    Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
@@ -46,11 +46,11 @@ First, prepare a samplesheet with your input data that looks as follows:
 `samplesheet.csv`:
 
 ```csv
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
+sample,fastq_1
+CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz
 ```
 
-Each row represents a fastq file (single-end) or a pair of fastq files (paired end).
+Each row represents a fastq file (single-end).
 
 -->
 
@@ -60,9 +60,13 @@ Now, you can run the pipeline using:
 
 ```bash
 nextflow run nf-core/longtrench \
-   -profile <docker/singularity/.../institute> \
+   -profile singularity \
    --input samplesheet.csv \
    --outdir <OUTDIR>
+   --gtf <GTF genome annotation>
+   --fasta <Reference genome>
+   --technology <dONT,ONT,PacBio>
+
 ```
 
 > [!WARNING]
