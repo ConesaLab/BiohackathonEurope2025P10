@@ -53,6 +53,7 @@ Container for Freddie
 
     #cleanup
     conda clean -y --all
+    /bin/micromamba clean --locks
     rm -f /opt/miniconda.sh
     apt autoremove --purge
     apt clean
