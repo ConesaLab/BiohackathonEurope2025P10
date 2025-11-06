@@ -12,7 +12,7 @@ process ISOQUANT {
     path(fasta)
 
     output:
-    tuple val(meta), path("*_stringtie.gtf"), emit: gtf
+    tuple val(meta), path("*_ispquant.gtf"), emit: gtf
     path "versions.yml", emit: versions
 
     when:
@@ -20,7 +20,7 @@ process ISOQUANT {
 
     script:
     def args = task.ext.args
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta.id}_isoquant"
     def annotation = gtf ? "--genedb $gtf --complete_genedb" : ''
     def tech_lower = params.technology.toLowerCase().replaceAll(/^dont\$/, 'ont')
     """
@@ -32,7 +32,6 @@ process ISOQUANT {
               --polya_requirement auto --report_canonical all \\
               --output $prefix
            
-
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         isoquant.py : \$( isoquant.py  --version | sed 's/isoquant v//' )

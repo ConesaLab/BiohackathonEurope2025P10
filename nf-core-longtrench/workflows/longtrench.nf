@@ -17,7 +17,7 @@ include { RATTLE                   } from '../modules/local/rattle/main'
 include { STRINGTIE3 as STRINGTIE3_W_REF } from  '../modules/local/stringtie3/main'
 include { STRINGTIE3 as STRINGTIE3_WO_REF } from  '../modules/local/stringtie3/main'
 include { ISOQUANT as ISOQUANT_W_REF  } from   '../modules/local/isoquant/main'
-include { ISOQUANT as ISOQUANT_W_REF  } from   '../modules/local/isoquant/main'
+include { ISOQUANT as ISOQUANT_WO_REF  } from   '../modules/local/isoquant/main'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -121,7 +121,18 @@ workflow LONGTRENCH {
     //
     // MODULE: Run IsoQuant
     //
-
+    // with reference
+    ISOQUANT_W_REF(
+        MINIMAP2_MAPPING.out.bam_wo_ref,
+        ch_gtf.map { gtf -> [["id": gtf.simpleName], gtf] },
+        ch_fasta
+    )
+    // without reference
+        ISOQUANT_WO_REF(
+        MINIMAP2_MAPPING.out.bam_wo_ref,
+        Channel.value([[:], []]),
+        ch_fasta
+    )
     //
     // Collate and save software versions
     //
