@@ -1,1 +1,3 @@
-*.sif
+nf-core-longtrench/output_test/minimap2_align/SAMPLE_TEST_dRNA.bam
+nf-core-longtrench/replay_pid3027074.log
+*/*.sif
