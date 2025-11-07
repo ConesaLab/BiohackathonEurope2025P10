@@ -11,6 +11,7 @@ include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pi
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_longtrench_pipeline'
 include { ONT_PREPROCESSING      } from '../subworkflows/local/ont_preprocessing/main'
 include { MINIMAP2_MAPPING        } from '../subworkflows/local/minimap2_mapping/main'
+include { ISOSEQ                 } from '../subworkflows/local/isoseq/main'
 include { BAMBU                    } from '../modules/local/bambu/main'
 include { ISONCLUST3                } from '../modules/local/isonclust3'
 include { RATTLE                   } from '../modules/local/rattle/main'
@@ -21,8 +22,9 @@ include { ISOQUANT as ISOQUANT_WO_REF  } from   '../modules/local/isoquant/main'
 include { ESPRESSO                } from    '../modules/local/espresso/main'
 include { BEDTOOLS_BAMTOBED       } from '../modules/nf-core/bedtools/bamtobed/main' 
 include { FLAIR                   } from '../modules/local/flair/main'
-include { FREDDIE                   } from '../modules/local/freddie/main'
-include { SEQKIT_FQ2FA             } from '../modules/nf-core/seqkit/fq2fa/main'  
+include { FREDDIE                 } from '../modules/local/freddie/main'
+include { ISOSCELES               } from '../modules/local/isosceles/main'
+include { SEQKIT_FQ2FA            } from '../modules/nf-core/seqkit/fq2fa/main'  
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -76,13 +78,14 @@ workflow LONGTRENCH {
 
     // ------ Running genome free tools ----------
 
+
     //
     // MODULE: Run IsonClust3
     //
-    ISONCLUST3(
-        ch_samplesheet_processed
-    )
-    ch_versions = ch_versions.mix(ISONCLUST3.out.versions.first())
+    // ISONCLUST3(
+    //     ch_samplesheet_processed
+    // )
+    // ch_versions = ch_versions.mix(ISONCLUST3.out.versions.first())
     //
     // MODULE: Run rattle on fastq
     //
@@ -107,6 +110,16 @@ workflow LONGTRENCH {
         ch_gtf
     )
     ch_versions = ch_versions.mix(MINIMAP2_MAPPING.out.versions.first())
+
+    if (params.technology == 'PacBio') {
+       ISOSEQ(
+         ch_samplesheet,
+         ch_fasta,
+         ch_gtf.map { gtf -> [["id": gtf.simpleName], gtf] }
+        )
+    }
+
+       
 
     // ------ Running reference based tools ----------
 
@@ -134,7 +147,15 @@ workflow LONGTRENCH {
     BEDTOOLS_BAMTOBED(
         MINIMAP2_MAPPING.out.bam_wo_ref
     )
-
+    // 
+    // MODULE: Run ISOSCELES
+    //
+    // ISOSCELES (
+    //     ch_fasta,
+    //     ch_gtf.map { gtf -> [["id": gtf.simpleName], gtf] },
+    //     MINIMAP2_MAPPING.out.bam_wo_ref
+    // )
+    // ch_versions = ch_versions.mix(ISOSCELES.out.versions.first())
     //
     // MODULE: FLAIR
     //
@@ -151,12 +172,12 @@ workflow LONGTRENCH {
     //
     // MODULE: Run freddie
     //
-    ch_freddie_license = Channel.fromPath("${HOME}/gurobi.lic")
-    FREDDIE(
-       ch_samplesheet_processed.combine(MINIMAP2_MAPPING.out.bam_wo_ref, by: 0),
-       ch_freddie_license
-    )
-    ch_versions = ch_versions.mix(FREDDIE.out.versions.first())
+    // ch_freddie_license = Channel.fromPath("${HOME}/gurobi.lic")
+    // FREDDIE(
+    //    ch_samplesheet_processed.combine(MINIMAP2_MAPPING.out.bam_wo_ref, by: 0),
+    //    ch_freddie_license
+    // )
+    // ch_versions = ch_versions.mix(FREDDIE.out.versions.first())
 
     // ------ Running tools that can be run without reference ----------
     //

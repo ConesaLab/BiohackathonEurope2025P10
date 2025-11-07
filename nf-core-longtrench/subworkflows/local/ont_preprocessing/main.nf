@@ -40,6 +40,7 @@ workflow ONT_PREPROCESSING {
          SEQKIT_SEQ.out.fastx
 
     fastq_processed.view()
+    
     emit:
     fastq = fastq_processed
     versions = ch_versions                    // channel: [ path(versions.yml) ]

@@ -5,7 +5,6 @@ process FREDDIE {
     conda "${moduleDir}/environment.yml"
     container "/home/julensan/tools/freddie.sif"
  
-
     input:
     tuple val(meta), path(reads), path(bam)
     path(license)
@@ -23,33 +22,31 @@ process FREDDIE {
     def tech_lower = params.technology.toLowerCase().replaceAll(/^dont$/, 'ont')
 
     """
-    freddie_split.py --reads ${reads} \\
-                      --bam ${bam} \\
+    freddie_split.py -h
+    freddie_split.py  -b ${bam} \\ 
+                      -r ${reads} \\
                       --outdir ${prefix}_split \\
-                      -t ${task.cpu}
+                      -t ${task.cpus}
 
     echo "freddie split completed."
 
     freddie_segment.py -s  ${prefix}_split \\
                        --outdir  ${prefix}_segment \\
-                       -t ${task.cpu}
+                       -t ${task.cpus}
 
     echo "freddie segment completed."
 
     freddie_cluster.py -s ${prefix}_segment \\
                        -o ${prefix}_cluster \\
-                       -t ${task.cpu} --timeout 15
+                       -t ${task.cpus} --timeout 15
 
     echo "freddie cluster completed."
 
     freddie_isoforms.py --split-dir  ${prefix}_split \\
                         --cluster-dir ${prefix}_cluster \\
                         --output ${prefix}.gtf" \\
-                        -t ${task.cpu}
+                        -t ${task.cpus}
 
-
- 
-    
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         freddie: \$(  v0.4' )

@@ -32,7 +32,14 @@ process ISONCLUST3 {
 
     isONclust3 --fastq \$READS \\
            --mode ${tech_lower} \\
-           --outfolder ${prefix}
+           --outfolder .
+
+    run_isoncorrect --t ${task.cpus} \\
+                    --fastq_folder . --outfolder .
+
+    isONform_parallel --t 16 ${task.cpus} \\
+                      --fastq_folder .  --outfolder . \\
+                      --split_wrt_batches 
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
