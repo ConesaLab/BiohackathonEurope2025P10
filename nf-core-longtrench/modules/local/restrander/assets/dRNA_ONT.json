@@ -1,0 +1,14 @@
+{
+    "name": "dRNA_ONT",
+    "description": "The default configuration. Applies PolyA/PolyT classification and only keeps reads with adapters on both sides.",
+    "pipeline": [
+        {
+            "type": "poly",
+            "tail-length": 12,
+            "search-size": 200
+        }
+    ],
+    "silent": false,
+    "exclude-unknowns": true,
+    "error-rate": 0.25
+}

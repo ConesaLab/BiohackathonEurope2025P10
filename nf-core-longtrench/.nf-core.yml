@@ -1,0 +1,18 @@
+repository_type: pipeline
+
+nf_core_version: 3.4.1
+
+lint: {}
+
+template:
+  org: nf-core
+  name: longtrench
+  description: A pipeline for benchmarking tools for transcriptome reconstruction
+    using long-read RNA-seq
+  author: nadjano
+  version: 1.0.0dev
+  force: true
+  outdir: .
+  skip_features:
+    - gpu
+  is_nfcore: true

@@ -1,0 +1,3 @@
+sample,fastq_1
+SAMPLE_TEST_dRNA,/home/julensan/datasets/PRJEB98148/small_fastq/HCT_N_AID_UPF1_0h_IAA_ONT_dRNA_1_small.fastq.gz
+SAMPLE_TEST_dRNA_2,/home/julensan/datasets/PRJEB98148/small_fastq/HCT_N_AID_UPF1_0h_IAA_ONT_dRNA_1_small_dup.fastq.gz
