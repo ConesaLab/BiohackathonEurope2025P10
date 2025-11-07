@@ -13,7 +13,7 @@ workflow ISOSEQ {
     take:
     ch_samplesheet    // channel: [ val(meta), path(fastq)]
     ch_fasta
-    ch_gtf
+
     
     main:
     ch_versions = Channel.empty()
@@ -26,24 +26,23 @@ workflow ISOSEQ {
             ch_samplesheet
     )
     ADAPTERS = Channel.value(file("/home/julensan/barcodes.fa", checkIfExists: true))
-    LIMA (
-       SAMTOOLS_IMPORT.out.bam,
-       ADAPTERS // replace with params
-    )
-
-    ISOSEQ3_REFINE (
-        LIMA.out.bam,
-        ADAPTERS // replace with params
-    )
+    // LIMA ( // Error: | 20251107 09:25:01.459 | WARN | Unknown read type 'UNKNOWN', will generate use SubreadSets!
+    //    SAMTOOLS_IMPORT.out.bam,
+    //    ADAPTERS // replace with params
+    // )
+    // LIMA.out.bam.view()
+    // ISOSEQ3_REFINE (
+    //     LIMA.out.bam,
+    //     ADAPTERS // replace with params
+    // )
 
     PBMM2 (
-        ISOSEQ3_REFINE.out.bam,
+        SAMTOOLS_IMPORT.out.bam,
         ch_fasta
     )
 
     ISOSEQ3_COLLAPSE (
-        LIMA.out.bam,
-        ch_gtf.map { gtf -> [["id": gtf.simpleName], gtf] }
+        PBMM2.out.bam
     )
     
     

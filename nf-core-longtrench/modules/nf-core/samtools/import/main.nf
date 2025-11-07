@@ -28,7 +28,7 @@ process SAMTOOLS_IMPORT {
                 "bam"
     def input = reads instanceof List && meta.single_end ? reads.join(" -0") :               // multiple single-end files
                 reads instanceof List && !meta.single_end ? "-1 ${reads[0]} -2 ${reads[1]}": // paired end file
-                meta.single_end ? "-0 $reads" :                                              // single single-end file
+                meta.single_end ? " $reads" :                                              // single single-end file
                 !meta.single_end ? "-s $reads":                                              // interleave paired-end file
                 reads                                                                        // if all else fails, just add the reads without flags
     """

@@ -1,9 +1,7 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/yaml-schema.json
-name: "samtools_import"
-description: converts FASTQ files to unmapped SAM/BAM/CRAM
+name: samtools_index
+description: Index SAM/BAM/CRAM file
 keywords:
-  - import
-  - fastq
+  - index
   - bam
   - sam
   - cram
@@ -23,46 +21,44 @@ input:
         type: map
         description: |
           Groovy Map containing sample information
-          e.g. `[ id:'test', single_end:false ]`
-    - reads:
+          e.g. [ id:'test', single_end:false ]
+    - input:
         type: file
-        description: fastq data to be converted to SAM/BAM/CRAM
-        pattern: "*.{fastq,fq,fastq.gz,fq.gz}"
-        ontologies:
-          - edam: http://edamontology.org/format_1930 # FASTQ
+        description: input file
+        ontologies: []
 output:
-  sam:
+  bai:
     - - meta:
           type: map
           description: |
             Groovy Map containing sample information
-            e.g. `[ id:'test', single_end:false ]`
-      - "*.sam":
+            e.g. [ id:'test', single_end:false ]
+      - "*.bai":
           type: file
-          description: SAM file
-          pattern: "*.sam"
+          description: BAM/CRAM/SAM index file
+          pattern: "*.{bai,crai,sai}"
           ontologies: []
-  bam:
+  csi:
     - - meta:
           type: map
           description: |
             Groovy Map containing sample information
-            e.g. `[ id:'test', single_end:false ]`
-      - "*.bam":
+            e.g. [ id:'test', single_end:false ]
+      - "*.csi":
           type: file
-          description: Unaligned BAM file
-          pattern: "*.bam"
+          description: CSI index file
+          pattern: "*.{csi}"
           ontologies: []
-  cram:
+  crai:
     - - meta:
           type: map
           description: |
             Groovy Map containing sample information
-            e.g. `[ id:'test', single_end:false ]`
-      - "*.cram":
+            e.g. [ id:'test', single_end:false ]
+      - "*.crai":
           type: file
-          description: Unaligned CRAM file
-          pattern: "*.cram"
+          description: BAM/CRAM/SAM index file
+          pattern: "*.{bai,crai,sai}"
           ontologies: []
   versions:
     - versions.yml:
@@ -72,6 +68,10 @@ output:
         ontologies:
           - edam: http://edamontology.org/format_3750 # YAML
 authors:
-  - "@matthdsm"
+  - "@drpatelh"
+  - "@ewels"
+  - "@maxulysse"
 maintainers:
-  - "@matthdsm"
+  - "@drpatelh"
+  - "@ewels"
+  - "@maxulysse"

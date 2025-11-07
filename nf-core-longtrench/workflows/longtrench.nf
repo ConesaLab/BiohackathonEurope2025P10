@@ -25,6 +25,7 @@ include { FLAIR                   } from '../modules/local/flair/main'
 include { FREDDIE                 } from '../modules/local/freddie/main'
 include { ISOSCELES               } from '../modules/local/isosceles/main'
 include { SEQKIT_FQ2FA            } from '../modules/nf-core/seqkit/fq2fa/main'  
+include { SAMTOOLS_INDEX } from '../modules/nf-core/samtools/index/main'  
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -82,11 +83,11 @@ workflow LONGTRENCH {
     //
     // MODULE: Run IsonClust3
     //
-    // ISONCLUST3(
-    //     ch_samplesheet_processed
-    // )
-    // ch_versions = ch_versions.mix(ISONCLUST3.out.versions.first())
-    //
+    ISONCLUST3(
+        ch_samplesheet_processed
+    )
+    ch_versions = ch_versions.mix(ISONCLUST3.out.versions.first())
+    
     // MODULE: Run rattle on fastq
     //
     RATTLE(
@@ -114,8 +115,7 @@ workflow LONGTRENCH {
     if (params.technology == 'PacBio') {
        ISOSEQ(
          ch_samplesheet,
-         ch_fasta,
-         ch_gtf.map { gtf -> [["id": gtf.simpleName], gtf] }
+         ch_fasta
         )
     }
 
@@ -150,13 +150,13 @@ workflow LONGTRENCH {
     // 
     // MODULE: Run ISOSCELES
     //
-    // ISOSCELES (
-    //     ch_fasta,
-    //     ch_gtf.map { gtf -> [["id": gtf.simpleName], gtf] },
-    //     MINIMAP2_MAPPING.out.bam_wo_ref
-    // )
-    // ch_versions = ch_versions.mix(ISOSCELES.out.versions.first())
-    //
+    ISOSCELES (
+        ch_fasta,
+        ch_gtf.map { gtf -> [["id": gtf.simpleName], gtf] },
+        MINIMAP2_MAPPING.out.bam_wo_ref
+    )
+    ch_versions = ch_versions.mix(ISOSCELES.out.versions.first())
+    
     // MODULE: FLAIR
     //
     FLAIR (
@@ -172,12 +172,13 @@ workflow LONGTRENCH {
     //
     // MODULE: Run freddie
     //
-    // ch_freddie_license = Channel.fromPath("${HOME}/gurobi.lic")
-    // FREDDIE(
-    //    ch_samplesheet_processed.combine(MINIMAP2_MAPPING.out.bam_wo_ref, by: 0),
-    //    ch_freddie_license
-    // )
-    // ch_versions = ch_versions.mix(FREDDIE.out.versions.first())
+
+    ch_freddie_license = Channel.fromPath("${HOME}/gurobi.lic")
+    FREDDIE(
+       ch_samplesheet_processed.combine(MINIMAP2_MAPPING.out.bam_wo_ref, by: 0).combine(MINIMAP2_MAPPING.out.index_wo_ref, by: 0),
+       ch_freddie_license
+    )
+    ch_versions = ch_versions.mix(FREDDIE.out.versions.first())
 
     // ------ Running tools that can be run without reference ----------
     //

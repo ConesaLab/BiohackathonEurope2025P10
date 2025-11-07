@@ -3,7 +3,11 @@ process LIMA {
     label 'process_low'
 
     conda "${moduleDir}/environment.yml"
-    container "/home/julensan/tools/lima.sif"
+
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'oras://community.wave.seqera.io/library/lima:2.13.0--56d26e1b9f3a5e61' :
+        'community.wave.seqera.io/library/lima:2.13.0--2976960270b40965' }"
 
     input:
     tuple val(meta), path(ccs)
@@ -14,8 +18,7 @@ process LIMA {
     tuple val(meta), path("*.report") , emit: report
     tuple val(meta), path("*.summary"), emit: summary
     path "versions.yml"               , emit: versions
-
-    tuple val(meta), path("*.bam")              , optional: true, emit: bam
+    tuple val(meta), path("*.bam")              , emit: bam
     tuple val(meta), path("*.bam.pbi")          , optional: true, emit: pbi
     tuple val(meta), path("*.{fa, fasta}")      , optional: true, emit: fasta
     tuple val(meta), path("*.{fa.gz, fasta.gz}"), optional: true, emit: fastagz

@@ -3,17 +3,14 @@ process ISOSEQ3_COLLAPSE {
     label 'process_low'
 
     conda "bioconda::isoseq3=3.8.2"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/isoseq3:3.8.2--h9ee0642_0' :
-        'biocontainers/isoseq3:3.8.2--h9ee0642_0' }"
+    container "/home/julensan/tools/isoseq.sif"
 
     input:
     tuple val(meta), path(bam)
-    tuple val(meta2), path(gtf)
 
 
     output:
-    tuple val(meta), path("*.bam")                        , emit: bam
+    tuple val(meta), path("*.gff")                        , emit: gtf
     path  "versions.yml"                                  , emit: versions
 
     when:
@@ -21,18 +18,18 @@ process ISOSEQ3_COLLAPSE {
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta.id}_isoseq3"
     """
-    isoseq3 \\
+    isoseq \\
         collapse \\
         -j $task.cpus \\
         $args \\
         $bam \\
-        $gtf
+        ${prefix}.gff
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        isoseq3: \$( isoseq3 refine --version | head -n 1 | sed 's/isoseq refine //' | sed 's/ (commit.\\+//' )
+        isoseq3: \$( isoseq --version | head -n 1 | sed 's/isoseq refine //' | sed 's/ (commit.\\+//' )
     END_VERSIONS
     """
 }

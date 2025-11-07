@@ -6,7 +6,7 @@ process FREDDIE {
     container "/home/julensan/tools/freddie.sif"
  
     input:
-    tuple val(meta), path(reads), path(bam)
+    tuple val(meta), path(reads), path(bam), path(bai)
     path(license)
 
     output:
@@ -22,34 +22,27 @@ process FREDDIE {
     def tech_lower = params.technology.toLowerCase().replaceAll(/^dont$/, 'ont')
 
     """
-    freddie_split.py -h
-    freddie_split.py  -b ${bam} \\ 
-                      -r ${reads} \\
+    freddie_split.py  -b ${bam} --reads ${reads} \\
                       --outdir ${prefix}_split \\
                       -t ${task.cpus}
 
-    echo "freddie split completed."
-
-    freddie_segment.py -s  ${prefix}_split \\
-                       --outdir  ${prefix}_segment \\
+    freddie_segment.py -s ${prefix}_split \\
+                       --outdir ${prefix}_segment \\
                        -t ${task.cpus}
-
-    echo "freddie segment completed."
 
     freddie_cluster.py -s ${prefix}_segment \\
                        -o ${prefix}_cluster \\
                        -t ${task.cpus} --timeout 15
 
-    echo "freddie cluster completed."
 
     freddie_isoforms.py --split-dir  ${prefix}_split \\
                         --cluster-dir ${prefix}_cluster \\
-                        --output ${prefix}.gtf" \\
+                        --output ${prefix}.gtf \\
                         -t ${task.cpus}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        freddie: \$(  v0.4' )
+        freddie: \$(  'v0.4' )
     END_VERSIONS
     """
 

@@ -3,7 +3,7 @@ process ISONCLUST3 {
     label 'process_low'
     
     conda "${moduleDir}/environment.yml"
-    container "/home/julensan/tools/isONclust.sif"
+    container "/home/julensan/tools/isONclust3-full.sif"
  
 
     input:
@@ -34,8 +34,8 @@ process ISONCLUST3 {
            --mode ${tech_lower} \\
            --outfolder .
 
-    run_isoncorrect --t ${task.cpus} \\
-                    --fastq_folder . --outfolder .
+    isONcorrect  \\
+                    --fastq . --outfolder c
 
     isONform_parallel --t 16 ${task.cpus} \\
                       --fastq_folder .  --outfolder . \\
@@ -61,4 +61,15 @@ process ISONCLUST3 {
 
 
 
+
+// isONclust3 --fastq $READS \
+//        --mode pacbio \
+//        --outfolder .
+
+// isONcorrect  \
+//                 --fastq clustering/fastq_files/0.fastq   --outfolder clustering
+
+// isONform_parallel --t 16  \
+//                   --fastq_folder clustering/fastq_files  --outfolder . \
+//                   --split_wrt_batches 
 
