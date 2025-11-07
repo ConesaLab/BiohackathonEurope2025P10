@@ -10,7 +10,7 @@ From: debian
     apt update
     #for security fixe:
     #apt upgrade -y
-    apt install -y wget bzip2 curl
+    apt install -y wget bzip2 curl procps bash
 
     #install conda
     cd /opt
