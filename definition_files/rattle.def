@@ -1,0 +1,14 @@
+Bootstrap: docker
+From: alpine
+
+%post
+   apk add wget make gcc make g++ zlib-dev bash
+   cd /
+   wget https://github.com/comprna/RATTLE/releases/download/v1.0/RATTLE-1.0.tar.gz
+   tar -xzvf RATTLE-1.0.tar.gz 
+   cd RATTLE-1.0
+   ./build.sh
+   ln -s /RATTLE-1.0/rattle /bin/rattle
+
+%runscript
+    /RATTLE-1.0/rattle $@

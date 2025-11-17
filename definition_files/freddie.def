@@ -1,0 +1,68 @@
+# distribution based on: debian
+Bootstrap:docker
+From:debian
+
+%environment
+export LC_ALL=C
+export LC_NUMERIC=en_GB.UTF-8
+export PATH="/opt/miniconda/bin:$PATH"
+
+#%labels
+#COPYRIGHT INRAe GAFL 2020
+#AUTHOR I2B team
+#VERSION 1.1
+#LICENSE MIT
+#DATE_MODIF MYDATEMODIF
+
+%help
+Container for Freddie
+
+%runscript
+    #default runscript: seq passing all arguments from cli: $@
+    /bin/micromamba run -p /opt/freddie "$@"
+
+%post
+
+    #essential stuff but minimal
+    apt update
+    #for security fixe:
+    #apt upgrade -y
+    apt install -y wget bzip2 curl procps
+
+    #install conda
+    cd /opt
+    rm -fr miniconda
+
+    #miniconda3: get miniconda3 version 4.7.12
+    wget https://repo.continuum.io/miniconda/Miniconda3-4.7.12-Linux-x86_64.sh -O miniconda.sh
+
+    #install conda
+    bash miniconda.sh -b -p /opt/miniconda
+    export PATH="/opt/miniconda/bin:$PATH"
+    cd /
+    curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
+    #add channels
+    conda config --add channels defaults
+    conda config --add channels bioconda
+    conda config --add channels conda-forge
+
+    #install seqkit
+    
+    /bin/micromamba create -c conda-forge -c bioconda -c gurobi --prefix /opt/freddie  freddie gurobi
+    #conda install -y -c bioconda freddie
+    echo "#! /bin/bash" >> /bin/freddie_cluster.py
+    echo "/opt/freddie/bin/python3 /opt/freddie/bin/freddie_cluster.py \$@" >> /bin/freddie_cluster.py
+    echo "#! /bin/bash" >> /bin/freddie_isoforms.py
+    echo "/opt/freddie/bin/python3 /opt/freddie/bin/freddie_isoforms.py \$@" >> /bin/freddie_isoforms.py
+    echo "#! /bin/bash" >> /bin/freddie_segment.py
+    echo "/opt/freddie/bin/python3 /opt/freddie/bin/freddie_segment.py \$@" >> /bin/freddie_segment.py
+    echo "#! /bin/bash" >> /bin/freddie_split.py
+    echo "/opt/freddie/bin/python3 /opt/freddie/bin/freddie_split.py \$@" >> /bin/freddie_split.py
+    chmod +x /bin/freddie_cluster.py /bin/freddie_isoforms.py /bin/freddie_segment.py /bin/freddie_split.py
+    #cleanup
+    conda clean -y --all
+    /bin/micromamba clean --locks
+    rm -f /opt/miniconda.sh
+    apt autoremove --purge
+    apt clean
+

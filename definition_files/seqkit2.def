@@ -1,0 +1,74 @@
+# distribution based on: debian 9.8
+Bootstrap:docker
+From:debian
+
+# container for seqkit v0.12.1
+# Build:
+# sudo singularity build seqkit_v0.12.1.sif Singularity.seqkit_v0.12.1
+
+%environment
+export LC_ALL=C
+export LC_NUMERIC=en_GB.UTF-8
+export PATH="/opt/miniconda/bin:$PATH"
+
+#%labels
+#COPYRIGHT INRAe GAFL 2020
+#AUTHOR I2B team
+#VERSION 1.1
+#LICENSE MIT
+#DATE_MODIF MYDATEMODIF
+#seqkit (v0.12.1)
+
+%help
+Container for seqkit
+Cross-platform and ultrafast toolkit for FASTA/Q file manipulation
+https://github.com/shenwei356/seqkit
+
+Version: 0.12.1
+Package installation using Miniconda3-4.7.12
+All packages are in /opt/miniconda/bin & are in PATH
+Default runscript: seq
+
+Usage:
+    seqkit_v0.12.1.sif --help
+    or:
+    singularity exec seqkit_v0.12.1.sif seq --help
+
+
+%runscript
+    #default runscript: seq passing all arguments from cli: $@
+    exec /opt/miniconda/bin/seqkit "$@"
+
+%post
+
+    #essential stuff but minimal
+    apt update
+    #for security fixe:
+    #apt upgrade -y
+    apt install -y wget bzip2
+
+    #install conda
+    cd /opt
+    rm -fr miniconda
+
+    #miniconda3: get miniconda3 version 4.7.12
+    wget https://repo.continuum.io/miniconda/Miniconda3-4.7.12-Linux-x86_64.sh -O miniconda.sh
+
+    #install conda
+    bash miniconda.sh -b -p /opt/miniconda
+    export PATH="/opt/miniconda/bin:$PATH"
+    #add channels
+    conda config --add channels defaults
+    conda config --add channels bioconda
+    conda config --add channels conda-forge
+
+    #install seqkit
+    
+    conda install -y -c bioconda seqkit
+
+    #cleanup
+    conda clean -y --all
+    rm -f /opt/miniconda.sh
+    apt autoremove --purge
+    apt clean
+
